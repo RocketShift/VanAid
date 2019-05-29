@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+
+
+    <ImageView
+        android:layout_width="411dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="-180dp"
+        android:layout_marginTop="280dp"
+        android:src="@drawable/backdrop" />
+
+    <ImageView
+        android:id="@+id/logovan"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:layout_marginTop="60dp"
+        android:layout_weight="0.10"
+        android:src="@drawable/van" />
+
+
+    <EditText
+        android:id="@+id/username"
+        android:layout_width="394dp"
+        android:layout_height="60dp"
+        android:width="35dp"
+        android:background="@drawable/box_white"
+        android:ems="10"
+        android:hint="@string/login_edittext1"
+        android:inputType="textPersonName"
+        android:paddingLeft="20dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="230dp"
+        android:textColor="@color/colorPrimaryDark"
+        android:textColorHint="@color/colorPrimaryDark"
+        android:fontFamily="@font/montserrat_regular"
+        android:textSize="@dimen/medium" />
+
+
+    <EditText
+        android:id="@+id/email"
+        android:layout_width="394dp"
+        android:layout_height="60dp"
+        android:width="35dp"
+        android:background="@drawable/box_white"
+        android:ems="10"
+        android:hint="Email"
+        android:inputType="textPersonName"
+        android:paddingLeft="20dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="299dp"
+        android:textColor="@color/colorPrimaryDark"
+        android:textColorHint="@color/colorPrimaryDark"
+        android:fontFamily="@font/montserrat_regular"
+        android:textSize="@dimen/medium" />
+
+    <EditText
+        android:id="@+id/phonenumber"
+        android:layout_width="394dp"
+        android:layout_height="60dp"
+        android:width="35dp"
+        android:background="@drawable/box_white"
+        android:ems="10"
+        android:hint="Phone Number"
+        android:inputType="textPersonName"
+        android:paddingLeft="20dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="370dp"
+        android:textColor="@color/colorPrimaryDark"
+        android:textColorHint="@color/colorPrimaryDark"
+        android:fontFamily="@font/montserrat_regular"
+        android:textSize="@dimen/medium" />
+
+
+    <EditText
+        android:id="@+id/password"
+        android:layout_width="394dp"
+        android:layout_height="60dp"
+        android:width="35dp"
+        android:background="@drawable/box_white"
+        android:ems="10"
+        android:hint="@string/login_edittext2"
+        android:inputType="textPassword"
+        android:paddingLeft="20dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="440dp"
+        android:textColor="@color/colorPrimaryDark"
+        android:textColorHint="@color/colorPrimaryDark"
+        android:fontFamily="@font/montserrat_regular"
+        android:textSize="@dimen/medium" />
+
+
+    <EditText
+        android:id="@+id/cpassword"
+        android:layout_width="394dp"
+        android:layout_height="60dp"
+        android:width="35dp"
+        android:background="@drawable/box_white"
+        android:ems="10"
+        android:hint="Confirm Password"
+        android:inputType="textPassword"
+        android:paddingLeft="20dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="510dp"
+        android:textColor="@color/colorPrimaryDark"
+        android:textColorHint="@color/colorPrimaryDark"
+        android:fontFamily="@font/montserrat_regular"
+        android:textSize="@dimen/medium" />
+    <Button
+        android:id="@+id/button2"
+        android:layout_width="394dp"
+        android:layout_height="60dp"
+        android:width="35dp"
+        android:layout_marginBottom="25dp"
+        android:layout_gravity="center_horizontal"
+        android:text="@string/login_text2"
+        android:background="@drawable/button_yellow"
+        android:textColor="@color/white"
+        android:fontFamily="@font/montserrat_regular"
+        android:layout_marginTop="600dp"
+        android:textSize="@dimen/medium"
+        android:layout_weight="0.1" />
+</FrameLayout>
