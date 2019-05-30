@@ -1,0 +1,87 @@
+Admin Web:
+Functions:
+1.Register Driver Account ng operator
+	Username
+	Password
+	FirstName
+	MiddleName
+	LastName
+	Address
+	Contact Number
+	Email
+	Licsence No.
+2. Register Van Details
+	Brand
+	Model
+	Year
+	Plate Number
+	Capacity
+	Color
+	count(kung ilan ung ganitong van ni operator)
+3. Map
+	Track Online Van Drivers
+5. view ratings of van drivers
+	makikita lang ung average rating na binigay ng mga commuters per day per week pati comment parang history
+	kung 3 consecutive weeks na nasa 2 stars(maximum of 5 stars) lang manonotify si operator na pangit performance ni driver
+6. View Emergency on map
+	ung kapag naclick ni van driver niya sa app nia na emergency magrered sa map ni admin ung icon ng van 
+7. Data Analytics (eto ung pinakamain na need)
+	Tell perfect time to go for trip based from gathered number of commuters of specific day time and place
+		example: sfc plaza 7am ng monday nakakasakay ako dun ng maximum ng capacity ng van (every monday un) 
+		so parang sasabhn na ni system every monday dapat before 7am nasa plaza na ako kasi mapupuno ko ung van
+	ung droppoint din kung saan ung lagi na may binaba si driver
+8. Total count ni commuter per day
+9. Total count ni commuter per month
+10. Total count ni commuter per week
+11. register ng operator sa web para magkaron ng account at makaregister ng driver nia at van details
+12. inaasign ni operator kung anung van ang gagamitin ng driver nia(1 driver 1 assignment ng van kung mag iiba update nalang)
+13. total earnings per day(pero nakabase sa minimum fare, kung saan kung ung total na nasakay ni van driver based sa narecord
+	sa db times lang sa minimum fare, parang assumed earnings for specific of day lang. dko kasi sinama sa function ni driver
+	na ilalagay din nia ung kung ilan nakuha nia bayad makakasagabal na sa transaction un
+14. login logout
+un palang alam ko sa web admin panel.
+
+
+driver app
+functions:
+1. login 
+	ung ginawa ng operator nia
+2. plus and minus button sa main screen na ni driver ung sa mapa na un
+	sa screen ni driver ung mapa na kung nasan xa tapos may plus and minus
+	tapos nakalgay din ung total capacity lang ng sasakyan na niregister ni operator
+	kung 15 ang nakalgay dun 0/15 si plus pde itap kung may sasakay, count na 
+	sa number of passenger nia that day ung 1 kung 1 lang tapos minus kapag may bumaba
+	pero magreremain pa din ung 1 na sumakay na naging count ng pasenger nia
+	kapag may sinakay xa magrerecord ung time and place kung san un sa database kung napindot
+	na ung plus ganun din sa minus parang droppoint 
+3. ratings ni driver makikita din nia per day per week parang may history ganun
+4. view profile nia ung nilgay ni operator nia kung may update sabihin sa operator
+5. emergency button kapag may nangyari (makikita ni admin sa web naging red ung color nung icon sa map)
+6. pde rin sguro ung makikita nia kung may online na gumagamit ng vanaid app for commuter(tuldok or bilog lang kung asan si commuter)
+7. meron na din dapat ung fare matrix kapg san sumakay si passenger (pero dko maisip kung panu un para daw sa revenue un e. pde sguro ung tatanung nang ni driver san galing
+  tas may itap nalng si driver na button na pipiliin nia ung san galing tas auto compute na ng babayaran sa location na pinagbabaan nia. dba kapg nagsasakay si driver
+  nasasave ung location and time. parang dun na kukuha ng data para sa button na magshoshow san galing si commuter, syempre un mga data na unn lagi nag iiba araw araw 
+  kung anu ung mga location na nagsakay xa un lang magpapakita ngaun araw ganun.tas need narin ng input ng fare matrix ni operator para dun makikita ung autocompute ng bayad
+  para easy pa din sa control si driver kumbaga plus minus sa asasakay tas buttn kung san pili xa ng san pinaggalingan nung baba na commuter tas papakita na ung babayaran.
+8. accepting / notification of reservation of seat ng commutera
+9. logout
+un palang alam ko sa driver app.
+
+
+commuter app
+functions
+1. register(fname,mname,lname,email,number,address) log in(number or email tas password) - kung pde daw ung api ng facebook na login or google
+2. main screen(map nakikita nia kung may van(pagkatap sa icon ni van makikita ung van details like driver name,plate number, van brand model and year color, 
+	seating capacity available seats(pagmeron na kasi un lalo ung avaiable seats sure na si commuter na makakaupo xa kpag d namn naguupdate si driver
+	sa plus minus function nia irarate naman ni commuter ng sobrang baba si driver with comment pa parang sa tooltip na lahat un kapg click nalng ung rate na btn 
+	dun nalng lilipat ng new screen)estimated distance and time din nung van kung madadaan xa ni van - dito mern daw dapat specific na range lang na makikita ni 
+	commuter ung van, for example 1km range lang mula sa location ni commuter,
+4. reservation ng seats (sinabi din na pde din daw ung parang magtop up si commuter na maging vip ganun parang may 2 types of commuter; ung free user ung d xa makakapagreserve ng seat
+	at ung vip or premium user kung saan may button xa para sa reserve seat pde din nia icancel ung researve seat with a given time(parang kapg nagreserve na xa may extra bayad na
+3. view profile update register details
+4. history din nung mga narate niang van,  mern xang capability na maview ung rating nia nun kung ilang stars,san xa bumamba at comment , sino si driver,anung van model,brand,year,color
+	,platenumber,capacity nung van,sino operator ni driver, contact details ni operator(may chance kasi na arkilahin nila ung van(para sa xtra income.)
+5.logout
+un palang alam ko sa commuter app.
+
+
