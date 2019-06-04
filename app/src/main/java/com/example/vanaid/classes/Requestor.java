@@ -5,9 +5,20 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.os.AsyncTask;
+import android.util.Log;
 import android.widget.Toast;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.NetworkInterface;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -87,5 +98,97 @@ public class Requestor {
 
     public void onNetworkError(){
         Toast.makeText(context, "Something went wrong.", Toast.LENGTH_LONG).show();
+    }
+
+    public static byte[] urlParams(Map<String, Object> params) throws UnsupportedEncodingException {
+        StringBuilder postData = new StringBuilder();
+        for (Map.Entry<String, Object> param : params.entrySet()) {
+            if (postData.length() != 0) postData.append('&');
+            postData.append(URLEncoder.encode(param.getKey(), "UTF-8"));
+            postData.append('=');
+            postData.append(URLEncoder.encode(String.valueOf(param.getValue()), "UTF-8"));
+        }
+        byte[] postDataBytes = postData.toString().getBytes("UTF-8");
+        return postDataBytes;
+    }
+
+    public void preExecute(){
+        Log.d("Requestor", "pre-executed");
+    }
+
+    public void postExecute(String result){
+        Log.d("Requestor", "Post Execute: " + result);
+    }
+
+    public void cancelled(){
+        Log.d("Requestor", "cancelled");
+    }
+
+    public class Ajaxer extends AsyncTask<String, String, String> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            isRunning = true;
+            preExecute();
+        }
+
+        @Override
+        protected void onCancelled() {
+            super.onCancelled();
+            isRunning = false;
+            cancelled();
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            HttpURLConnection connection = null;
+            BufferedReader reader = null;
+
+            try {
+                byte[] postDataBytes = urlParams(param);
+                java.net.URL urlj = new URL(url);
+                connection = (HttpURLConnection) urlj.openConnection();
+                connection.setRequestMethod("POST");
+                connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+                connection.setRequestProperty("Content-Length", String.valueOf(postDataBytes.length));
+                connection.setDoOutput(true);
+                connection.getOutputStream().write(postDataBytes);
+                connection.setConnectTimeout(30000);
+                connection.connect();
+                InputStream stream = connection.getInputStream();
+                reader = new BufferedReader(new InputStreamReader(stream));
+                StringBuffer buffer = new StringBuffer();
+                String line = "";
+                while ((line = reader.readLine()) != null) {
+                    buffer.append(line);
+                }
+                String finalJson = buffer.toString().trim();
+                return finalJson;
+            } catch (MalformedURLException e) {
+                cancel(true);
+            } catch (IOException e) {
+
+                cancel(true);
+            } finally {
+                if(connection != null) {
+                    connection.disconnect();
+                }
+                try {
+                    if(reader != null) {
+                        reader.close();
+                    }
+                } catch (IOException e) {
+                    cancel(true);
+                }
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            isRunning = false;
+            postExecute(s);
+        }
     }
 }
