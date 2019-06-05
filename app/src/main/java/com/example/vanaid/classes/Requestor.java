@@ -9,6 +9,9 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.Toast;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,7 +35,7 @@ public class Requestor {
     private Context context;
 
     public Requestor(String url, Map<String, Object> param, Context context){
-        this.url = url + url;
+        this.url = this.url + url;
         this.param = param;
         this.context = context;
     }
@@ -45,17 +48,17 @@ public class Requestor {
         Boolean network = isNetworkAvailable();
         if (network == true) {
             WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
-            WifiInfo wInfo = wifiManager.getConnectionInfo();
-            String macAddress = wInfo.getMacAddress();
-            if(macAddress.equals("02:00:00:00:00:00")){
-                macAddress = getWifiMacAddress();
-            }
-            param.put("macaddress", macAddress);
+//            WifiInfo wInfo = wifiManager.getConnectionInfo();
+//            String macAddress = wInfo.getMacAddress();
+//            if(macAddress.equals("02:00:00:00:00:00")){
+//                macAddress = getWifiMacAddress();
+//            }
+//            param.put("macaddress", macAddress);
             param.put("type", "driver");
             if (isRunning == true && asynchronus == true) {
-//                new Ajaxer().execute();
+                new Ajaxer().execute();
             }else{
-//                new Ajaxer().execute();
+                new Ajaxer().execute();
             }
         } else {
             onNetworkError();
@@ -116,8 +119,8 @@ public class Requestor {
         Log.d("Requestor", "pre-executed");
     }
 
-    public void postExecute(String result){
-        Log.d("Requestor", "Post Execute: " + result);
+    public void postExecute(JSONObject response){
+        Log.d("Requestor", "Post Execute: " + response);
     }
 
     public void cancelled(){
@@ -148,8 +151,9 @@ public class Requestor {
                 byte[] postDataBytes = urlParams(param);
                 java.net.URL urlj = new URL(url);
                 connection = (HttpURLConnection) urlj.openConnection();
-                connection.setRequestMethod("POST");
-                connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+                connection.setRequestMethod("GET");
+                connection.setRequestProperty("X-Requested-With", "XMLHttpRequest");
+//                connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
                 connection.setRequestProperty("Content-Length", String.valueOf(postDataBytes.length));
                 connection.setDoOutput(true);
                 connection.getOutputStream().write(postDataBytes);
@@ -158,7 +162,7 @@ public class Requestor {
                 InputStream stream = connection.getInputStream();
                 reader = new BufferedReader(new InputStreamReader(stream));
                 StringBuffer buffer = new StringBuffer();
-                String line = "";
+                String line;
                 while ((line = reader.readLine()) != null) {
                     buffer.append(line);
                 }
@@ -188,7 +192,12 @@ public class Requestor {
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
             isRunning = false;
-            postExecute(s);
+            try {
+                JSONObject response = new JSONObject(s);
+                postExecute(response);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

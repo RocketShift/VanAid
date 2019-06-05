@@ -31,4 +31,5 @@
     <string name="passenger_text1">Passenger Details</string>
     <string name="passenger_text2">Passenger Ratings</string>
     <string name="passenger_text3">Logout</string>
+    <string name="address">Address</string>
 </resources>
