@@ -151,15 +151,21 @@ public class Requestor {
                 byte[] postDataBytes = urlParams(param);
                 java.net.URL urlj = new URL(url);
                 connection = (HttpURLConnection) urlj.openConnection();
-                connection.setRequestMethod("GET");
-                connection.setRequestProperty("X-Requested-With", "XMLHttpRequest");
-//                connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-                connection.setRequestProperty("Content-Length", String.valueOf(postDataBytes.length));
+                connection.setRequestMethod("POST");
                 connection.setDoOutput(true);
+                connection.setRequestProperty("X-Requested-With", "XMLHttpRequest");
+                connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+                connection.setRequestProperty("Content-Length", String.valueOf(postDataBytes.length));
                 connection.getOutputStream().write(postDataBytes);
                 connection.setConnectTimeout(30000);
                 connection.connect();
-                InputStream stream = connection.getInputStream();
+                int status = connection.getResponseCode();
+                InputStream stream = null;
+                if (connection.getResponseCode() < HttpURLConnection.HTTP_BAD_REQUEST) {
+                    stream = connection.getInputStream();
+                } else {
+                    stream = connection.getErrorStream();
+                }
                 reader = new BufferedReader(new InputStreamReader(stream));
                 StringBuffer buffer = new StringBuffer();
                 String line;
