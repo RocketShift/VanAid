@@ -13,6 +13,7 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.example.vanaid.classes.ErrorMessages;
 import com.example.vanaid.classes.Requestor;
 
 import org.json.JSONArray;
@@ -53,8 +54,10 @@ public class Signup extends AppCompatActivity implements View.OnClickListener {
 
     @Override
     public void onClick(View view) {
-        if (view.equals(submit)){
-            Map<String, Object> param =  new LinkedHashMap<>();;
+        if (view.equals(submit)) {
+            Button button = (Button) view;
+            if (button.getText().equals(getString(R.string.login_text2))) {
+            Map<String, Object> param = new LinkedHashMap<>();
             param.put("username", username.getText());
             param.put("name", name.getText());
             param.put("address", address.getText());
@@ -63,28 +66,22 @@ public class Signup extends AppCompatActivity implements View.OnClickListener {
             param.put("password", password.getText());
             param.put("password_confirmation", password_confirmation.getText());
 
-            Requestor requestor = new Requestor("register", param, this){
+            Requestor requestor = new Requestor("register", param, this) {
+                @Override
+                public void preExecute() {
+                    submit.setText(R.string.please_wait);
+                }
+
                 @Override
                 public void postExecute(JSONObject result) {
-                    try {
-                        JSONObject errors = result.getJSONObject("errors");
-                        Iterator<String> keys = errors.keys();
-
-                        while(keys.hasNext()) {
-                            String key = keys.next();
-                            if (errors.getJSONArray(key) != null) {
-                                JSONArray messages = errors.getJSONArray(key);
-                                TextInputLayout view = findViewById(getApplicationContext().getResources().getIdentifier(key + "_layout", "id", getApplicationContext().getPackageName()));
-                                view.setError(messages.get(0).toString());
-                            }
-                        }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
+                    submit.setText(R.string.login_text2);
+                    ErrorMessages errors = new ErrorMessages(getApplicationContext(), Signup.this, result);
+                    errors.showErrors();
                 }
             };
 
             requestor.execute();
+        }
         }
     }
 
