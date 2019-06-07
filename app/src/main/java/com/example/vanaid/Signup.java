@@ -1,28 +1,39 @@
 package com.example.vanaid;
 
 import android.os.Bundle;
+import android.support.design.widget.TextInputEditText;
+import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListAdapter;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.example.vanaid.classes.Requestor;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Signup extends AppCompatActivity implements View.OnClickListener {
     private Button submit;
-    private EditText username;
-    private EditText name;
-    private EditText address;
-    private EditText email;
-    private EditText phone;
-    private EditText password;
-    private EditText password_confirmation;
+    private TextInputEditText username;
+    private TextInputEditText  name;
+    private TextInputEditText  address;
+    private TextInputEditText  email;
+    private TextInputEditText  phone;
+    private TextInputEditText  password;
+    private TextInputEditText password_confirmation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,11 +66,45 @@ public class Signup extends AppCompatActivity implements View.OnClickListener {
             Requestor requestor = new Requestor("register", param, this){
                 @Override
                 public void postExecute(JSONObject result) {
-                    super.postExecute(result);
+                    try {
+                        JSONObject errors = result.getJSONObject("errors");
+                        Iterator<String> keys = errors.keys();
+
+                        while(keys.hasNext()) {
+                            String key = keys.next();
+                            if (errors.getJSONArray(key) != null) {
+                                JSONArray messages = errors.getJSONArray(key);
+                                TextInputLayout view = findViewById(getApplicationContext().getResources().getIdentifier(key + "_layout", "id", getApplicationContext().getPackageName()));
+                                view.setError(messages.get(0).toString());
+                            }
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
             };
 
             requestor.execute();
         }
     }
+
+//    public static void setListViewHeightBasedOnChildren(ListView listView) {
+//        ListAdapter listAdapter = listView.getAdapter();
+//        if (listAdapter == null) {
+//            // pre-condition
+//            return;
+//        }
+//
+//        int totalHeight = 0;
+//        for (int i = 0; i < listAdapter.getCount(); i++) {
+//            View listItem = listAdapter.getView(i, null, listView);
+//            listItem.measure(0, 0);
+//            totalHeight += listItem.getMeasuredHeight();
+//        }
+//
+//        ViewGroup.LayoutParams params = listView.getLayoutParams();
+//        params.height = totalHeight + (listView.getDividerHeight() * (listAdapter.getCount() - 1));
+//        listView.setLayoutParams(params);
+//        listView.requestLayout();
+//    }
 }
