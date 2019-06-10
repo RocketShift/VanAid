@@ -35,6 +35,7 @@ public class Signup extends AppCompatActivity implements View.OnClickListener {
     private TextInputEditText  phone;
     private TextInputEditText  password;
     private TextInputEditText password_confirmation;
+    ErrorMessages errors = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +51,8 @@ public class Signup extends AppCompatActivity implements View.OnClickListener {
         password_confirmation = findViewById(R.id.password_confirmation);
         submit = findViewById(R.id.button2);
         submit.setOnClickListener(this);
+
+        errors = new ErrorMessages(Signup.this);
     }
 
     @Override
@@ -75,8 +78,8 @@ public class Signup extends AppCompatActivity implements View.OnClickListener {
                 @Override
                 public void postExecute(JSONObject result) {
                     submit.setText(R.string.login_text2);
-                    ErrorMessages errors = new ErrorMessages(getApplicationContext(), Signup.this, result);
-                    errors.showErrors();
+
+                    errors.showErrors(result);
                 }
             };
 

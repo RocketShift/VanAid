@@ -1,28 +1,30 @@
 package com.example.vanaid.classes;
 
 import android.app.Activity;
-import android.content.ActivityNotFoundException;
-import android.content.Context;
 import android.support.design.widget.TextInputLayout;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 
 public class ErrorMessages {
     private Activity activity;
-    private Context context;
-    private JSONObject response;
+    private ArrayList<String> textinputlayouts = new ArrayList<String>();
 
-    public ErrorMessages(Context context, Activity activity, JSONObject response){
+    public ErrorMessages(Activity activity){
         this.activity = activity;
-        this.context = context;
-        this.response = response;
     }
 
-    public void showErrors(){
+    public void showErrors(JSONObject response){
+        if(!textinputlayouts.isEmpty()){
+            for (int i = 0; i < textinputlayouts.size(); i++) {
+                TextInputLayout view = activity.findViewById(activity.getApplicationContext().getResources().getIdentifier(textinputlayouts.get(i), "id", activity.getApplicationContext().getPackageName()));
+                view.setErrorEnabled(false);
+            }
+        }
         try {
             JSONObject errors = response.getJSONObject("errors");
             Iterator<String> keys = errors.keys();
@@ -31,7 +33,10 @@ public class ErrorMessages {
                 String key = keys.next();
                 if (errors.getJSONArray(key) != null) {
                     JSONArray messages = errors.getJSONArray(key);
-                    TextInputLayout view = activity.findViewById(context.getResources().getIdentifier(key + "_layout", "id", context.getPackageName()));
+                    if(!textinputlayouts.contains(key + "_layout")) {
+                        textinputlayouts.add(key + "_layout");
+                    }
+                    TextInputLayout view = activity.findViewById(activity.getApplicationContext().getResources().getIdentifier(key + "_layout", "id", activity.getApplicationContext().getPackageName()));
                     view.setError(messages.get(0).toString());
                 }
             }
