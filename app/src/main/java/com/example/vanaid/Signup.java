@@ -1,40 +1,28 @@
 package com.example.vanaid;
 
 import android.os.Bundle;
-import android.support.design.widget.TextInputEditText;
-import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.AppCompatEditText;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ListAdapter;
-import android.widget.ListView;
-import android.widget.Toast;
 
 import com.example.vanaid.classes.ErrorMessages;
 import com.example.vanaid.classes.Requestor;
 
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 public class Signup extends AppCompatActivity implements View.OnClickListener {
     private Button submit;
-    private TextInputEditText username;
-    private TextInputEditText  name;
-    private TextInputEditText  address;
-    private TextInputEditText  email;
-    private TextInputEditText  phone;
-    private TextInputEditText  password;
-    private TextInputEditText password_confirmation;
+    private AppCompatEditText username;
+    private AppCompatEditText name;
+    private AppCompatEditText address;
+    private AppCompatEditText email;
+    private AppCompatEditText phone;
+    private AppCompatEditText password;
+    private AppCompatEditText password_confirmation;
     ErrorMessages errors = null;
 
     @Override
