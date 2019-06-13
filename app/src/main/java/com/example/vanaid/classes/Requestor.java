@@ -100,7 +100,7 @@ public class Requestor {
     }
 
     public void onNetworkError(){
-        Toast.makeText(context, "Something went wrong.", Toast.LENGTH_LONG).show();
+        Toast.makeText(context, "Could not connect to the internet.", Toast.LENGTH_LONG).show();
     }
 
     public static byte[] urlParams(Map<String, Object> params) throws UnsupportedEncodingException {
