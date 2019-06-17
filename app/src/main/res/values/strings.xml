@@ -33,4 +33,7 @@
     <string name="passenger_text3">Logout</string>
     <string name="address">Address</string>
     <string name="please_wait">Please wait...</string>
+    <string name="signup_successful">Signup Successful!</string>
+    <string name="cannowlogin">You can now login using you\'re chosen username.</string>
+    <string name="ok">OK</string>
 </resources>

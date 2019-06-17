@@ -1,5 +1,6 @@
 package com.example.vanaid;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatEditText;
@@ -9,6 +10,7 @@ import android.widget.Button;
 import com.example.vanaid.classes.ErrorMessages;
 import com.example.vanaid.classes.Requestor;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.LinkedHashMap;
@@ -53,7 +55,7 @@ public class Signup extends AppCompatActivity implements View.OnClickListener {
             param.put("name", name.getText());
             param.put("address", address.getText());
             param.put("email", email.getText());
-            param.put("phone", phone.getText());
+            param.put("phonenumber", phone.getText());
             param.put("password", password.getText());
             param.put("password_confirmation", password_confirmation.getText());
 
@@ -68,6 +70,15 @@ public class Signup extends AppCompatActivity implements View.OnClickListener {
                     submit.setText(R.string.login_text2);
 
                     errors.showErrors(result);
+
+                    try {
+                        JSONObject user = result.getJSONObject("user");
+                        Intent intent = new Intent(getApplicationContext(), Login.class);
+                        intent.putExtra("username", user.get("username").toString());
+                        startActivity(intent);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
             };
 
