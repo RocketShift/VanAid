@@ -9,7 +9,19 @@ import android.support.v7.widget.AppCompatEditText;
 import android.view.View;
 import android.widget.Button;
 
+import com.example.vanaid.classes.Requestor;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 public class Login extends AppCompatActivity {
+    final private String GRANT_TYPE = "password";
+    final private Integer CLIENT_ID = 3;
+    final private String CLIENT_SECRET = "aczZI6bURpYjal4pgyoB3ZbW6kIMsJwzkyLpHzco";
+    final private String SCOPE = "*";
     private Button mButton;
     private Button mButton2;
     private AppCompatEditText etUsername;
@@ -28,7 +40,38 @@ public class Login extends AppCompatActivity {
         mButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                open_activity();
+                Map<String, Object> param = new LinkedHashMap<>();
+                param.put("username", etUsername.getText().toString());
+                param.put("password", etPassword.getText().toString());
+                param.put("grant_type", GRANT_TYPE);
+                param.put("client_id", CLIENT_ID);
+                param.put("client_secret", CLIENT_SECRET);
+                param.put("scope", SCOPE);
+
+                Requestor requestor = new Requestor("oauth/token", param, getApplicationContext()){
+                    @Override
+                    public void preExecute() {
+                        mButton.setText(R.string.please_wait);
+                    }
+
+                    @Override
+                    public void postExecute(JSONObject response) {
+                        mButton.setText(R.string.login_bttext);
+                        try {
+                            response.get("error");
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                        try {
+                            response.get("access_token");
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                };
+
+                requestor.execute();
             }
         });
 
