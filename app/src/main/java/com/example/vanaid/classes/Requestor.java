@@ -31,8 +31,9 @@ public class Requestor {
     private Map<String, Object> param;
     private Boolean asynchronus = false;
     private Integer PAGE = null;
-    private String url = "http://vanaid.dresdain.com/api/";
+    private String url = "http://vanaid.dresdain.com/";
     private Context context;
+    final public static String SHARED_REFERENCES = "vanaidpreferences";
 
     public Requestor(String url, Map<String, Object> param, Context context){
         this.url = this.url + url;

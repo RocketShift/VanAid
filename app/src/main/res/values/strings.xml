@@ -36,4 +36,6 @@
     <string name="signup_successful">Signup Successful!</string>
     <string name="cannowlogin">You can now login using you\'re chosen username.</string>
     <string name="ok">OK</string>
+    <string name="invalidusernameorpassword">Invalid username or password</string>
+    <string name="pleasetryagain">Please try again</string>
 </resources>

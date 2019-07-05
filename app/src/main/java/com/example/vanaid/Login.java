@@ -2,6 +2,7 @@ package com.example.vanaid;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -26,6 +27,7 @@ public class Login extends AppCompatActivity {
     private Button mButton2;
     private AppCompatEditText etUsername;
     private AppCompatEditText etPassword;
+    private AlertDialog alertDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +38,8 @@ public class Login extends AppCompatActivity {
         mButton2 = (Button) findViewById(R.id.signup_button);
         etUsername = findViewById(R.id.username);
         etPassword = findViewById(R.id.password);
+
+        alertDialog = new AlertDialog.Builder(Login.this).create();
 
         mButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -59,12 +63,25 @@ public class Login extends AppCompatActivity {
                         mButton.setText(R.string.login_bttext);
                         try {
                             response.get("error");
+                            alertDialog.setTitle(getApplicationContext().getString(R.string.invalidusernameorpassword));
+                            alertDialog.setMessage(getApplicationContext().getString(R.string.pleasetryagain));
+                            alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, getApplicationContext().getString(R.string.ok),
+                                    new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            dialog.dismiss();
+                                        }
+                                    });
+                            alertDialog.show();
+
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
 
                         try {
-                            response.get("access_token");
+                            String access_token = response.getString("access_token");
+                            SharedPreferences.Editor editor = getSharedPreferences(Requestor.SHARED_REFERENCES, MODE_PRIVATE).edit();
+                            editor.putString("access_token", access_token);
+                            editor.apply();
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -85,7 +102,6 @@ public class Login extends AppCompatActivity {
         Intent signup = getIntent();
         String username = signup.getStringExtra("username");
         if(username != null){
-            AlertDialog alertDialog = new AlertDialog.Builder(Login.this).create();
             alertDialog.setTitle(getApplicationContext().getString(R.string.signup_successful));
             alertDialog.setMessage(getApplicationContext().getString(R.string.cannowlogin));
             alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, getApplicationContext().getString(R.string.ok),

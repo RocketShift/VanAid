@@ -59,7 +59,7 @@ public class Signup extends AppCompatActivity implements View.OnClickListener {
             param.put("password", password.getText());
             param.put("password_confirmation", password_confirmation.getText());
 
-            Requestor requestor = new Requestor("register", param, this) {
+            Requestor requestor = new Requestor("api/register", param, this) {
                 @Override
                 public void preExecute() {
                     submit.setText(R.string.please_wait);
