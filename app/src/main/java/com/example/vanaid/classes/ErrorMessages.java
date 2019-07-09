@@ -1,7 +1,7 @@
 package com.example.vanaid.classes;
 
 import android.app.Activity;
-import android.support.design.widget.TextInputLayout;
+import com.google.android.material.textfield.TextInputLayout;
 
 import org.json.JSONArray;
 import org.json.JSONException;

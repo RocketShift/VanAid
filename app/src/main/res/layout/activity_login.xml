@@ -57,7 +57,7 @@
                 android:paddingRight="30dp"
                 android:paddingLeft="30dp">
 
-                <android.support.v7.widget.AppCompatEditText
+                <androidx.appcompat.widget.AppCompatEditText
                     android:id="@+id/username"
                     android:layout_width="match_parent"
                     android:layout_height="60dp"
@@ -73,7 +73,7 @@
                     app:backgroundTint="@color/main"
                     android:textSize="@dimen/medium" />
 
-                <android.support.v7.widget.AppCompatEditText
+                <androidx.appcompat.widget.AppCompatEditText
                     android:id="@+id/password"
                     android:layout_width="match_parent"
                     android:layout_height="60dp"
@@ -89,7 +89,7 @@
                     app:backgroundTint="@color/main"
                     android:textSize="@dimen/medium" />
 
-                <android.support.v4.widget.Space
+                <androidx.legacy.widget.Space
                     android:layout_width="match_parent"
                     android:layout_height="20dp" />
                 <Button

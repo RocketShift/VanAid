@@ -19,12 +19,12 @@ xmlns:app="http://schemas.android.com/apk/res-auto">
         android:paddingLeft="-30dp"
         android:paddingRight="-30dp"/>
 
-    <android.support.design.widget.TextInputLayout
+    <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/username_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:errorEnabled="true">
-        <android.support.v7.widget.AppCompatEditText
+        <androidx.appcompat.widget.AppCompatEditText
             android:id="@+id/username"
             android:layout_width="match_parent"
             android:layout_height="60dp"
@@ -44,15 +44,15 @@ xmlns:app="http://schemas.android.com/apk/res-auto">
             android:scrollHorizontally="false"
             android:scrollbarStyle="insideInset"
             android:scrollbars="vertical" />
-    </android.support.design.widget.TextInputLayout>
+    </com.google.android.material.textfield.TextInputLayout>
 
-    <android.support.design.widget.TextInputLayout
+    <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/name_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:errorEnabled="true">
 
-        <android.support.v7.widget.AppCompatEditText
+        <androidx.appcompat.widget.AppCompatEditText
             android:id="@+id/name"
             android:layout_width="match_parent"
             android:layout_height="60dp"
@@ -73,15 +73,15 @@ xmlns:app="http://schemas.android.com/apk/res-auto">
             android:scrollHorizontally="false"
             android:scrollbarStyle="insideInset"
             android:scrollbars="vertical" />
-    </android.support.design.widget.TextInputLayout>
+    </com.google.android.material.textfield.TextInputLayout>
 
-    <android.support.design.widget.TextInputLayout
+    <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/address_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:errorEnabled="true">
 
-        <android.support.v7.widget.AppCompatEditText
+        <androidx.appcompat.widget.AppCompatEditText
             android:id="@+id/address"
             android:layout_width="match_parent"
             android:layout_height="60dp"
@@ -101,15 +101,15 @@ xmlns:app="http://schemas.android.com/apk/res-auto">
             android:scrollHorizontally="false"
             android:scrollbarStyle="insideInset"
             android:scrollbars="vertical" />
-    </android.support.design.widget.TextInputLayout>
+    </com.google.android.material.textfield.TextInputLayout>
 
-    <android.support.design.widget.TextInputLayout
+    <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/email_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:errorEnabled="true">
 
-        <android.support.v7.widget.AppCompatEditText
+        <androidx.appcompat.widget.AppCompatEditText
             android:id="@+id/email"
             android:layout_width="match_parent"
             android:layout_height="60dp"
@@ -129,14 +129,14 @@ xmlns:app="http://schemas.android.com/apk/res-auto">
             android:scrollHorizontally="false"
             android:scrollbarStyle="insideInset"
             android:scrollbars="vertical" />
-    </android.support.design.widget.TextInputLayout>
+    </com.google.android.material.textfield.TextInputLayout>
 
-    <android.support.design.widget.TextInputLayout
+    <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/phonenumber_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:errorEnabled="true">
-        <android.support.v7.widget.AppCompatEditText
+        <androidx.appcompat.widget.AppCompatEditText
             android:id="@+id/phonenumber"
             android:layout_width="match_parent"
             android:layout_height="60dp"
@@ -156,15 +156,15 @@ xmlns:app="http://schemas.android.com/apk/res-auto">
             android:scrollHorizontally="false"
             android:scrollbarStyle="insideInset"
             android:scrollbars="vertical" />
-    </android.support.design.widget.TextInputLayout>
+    </com.google.android.material.textfield.TextInputLayout>
 
-    <android.support.design.widget.TextInputLayout
+    <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/password_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:errorEnabled="true">
 
-        <android.support.v7.widget.AppCompatEditText
+        <androidx.appcompat.widget.AppCompatEditText
             android:id="@+id/password"
             android:layout_width="match_parent"
             android:layout_height="60dp"
@@ -184,15 +184,15 @@ xmlns:app="http://schemas.android.com/apk/res-auto">
             android:scrollHorizontally="false"
             android:scrollbarStyle="insideInset"
             android:scrollbars="vertical" />
-    </android.support.design.widget.TextInputLayout>
+    </com.google.android.material.textfield.TextInputLayout>
 
-    <android.support.design.widget.TextInputLayout
+    <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/password_confirmation_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:errorEnabled="true">
 
-        <android.support.v7.widget.AppCompatEditText
+        <androidx.appcompat.widget.AppCompatEditText
             android:id="@+id/password_confirmation"
             android:layout_width="match_parent"
             android:layout_height="60dp"
@@ -212,7 +212,7 @@ xmlns:app="http://schemas.android.com/apk/res-auto">
             android:scrollHorizontally="false"
             android:scrollbarStyle="insideInset"
             android:scrollbars="vertical" />
-    </android.support.design.widget.TextInputLayout>
+    </com.google.android.material.textfield.TextInputLayout>
 
     <Button
         android:id="@+id/button2"

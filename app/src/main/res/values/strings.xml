@@ -39,4 +39,6 @@
     <string name="invalidusernameorpassword">Invalid username or password</string>
     <string name="pleasetryagain">Please try again</string>
     <string name="title_activity_maps">Map</string>
+    <string name="Open">Open</string>
+    <string name="Close">Close</string>
 </resources>

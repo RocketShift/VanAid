@@ -4,9 +4,9 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.AppCompatEditText;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatEditText;
 import android.view.View;
 import android.widget.Button;
 
@@ -82,6 +82,9 @@ public class Login extends AppCompatActivity {
                             SharedPreferences.Editor editor = getSharedPreferences(Requestor.SHARED_REFERENCES, MODE_PRIVATE).edit();
                             editor.putString("access_token", access_token);
                             editor.apply();
+
+                            Intent main = new Intent(getApplicationContext(), MainActivity.class);
+                            startActivity(main);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
