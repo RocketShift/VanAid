@@ -8,4 +8,10 @@
     <color name="orange">#f39c12</color>
     <color name="main">#DC8744</color>
     <color name="InactiveBottomNavIconColor">#FFDAA0</color>
+
+    <!--Set correct brand colors,
+        brandColor and brandAccent can also be used in conjunction for a linear gradient
+    -->
+    <color name="colorBrandPrimary">#F39C12</color>
+    <color name="colorBrandAccent">#E80488</color>
 </resources>
