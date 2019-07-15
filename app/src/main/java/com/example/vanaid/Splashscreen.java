@@ -44,7 +44,7 @@ public class Splashscreen extends AppCompatActivity {
                 try {
                     int waited = 0;
                     // Splash screen pause time
-                    while (waited < 2000) {
+                    while (waited < 4000) {
                         sleep(100);
                         waited += 100;
                     }
