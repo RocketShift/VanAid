@@ -1,11 +1,14 @@
 package com.example.vanaid.fragments;
 
 import android.content.Context;
+import android.location.Address;
+import android.location.Geocoder;
 import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +20,17 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.maps.DirectionsApi;
+import com.google.maps.GeoApiContext;
+import com.google.maps.GeolocationApi;
+import com.google.maps.model.DirectionsResult;
+import com.google.maps.model.TravelMode;
+
+import org.joda.time.DateTime;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -91,6 +104,45 @@ public class HomeFragment extends Fragment {
                         .build();
 
                 mMap.animateCamera(CameraUpdateFactory.newCameraPosition(googlePlex), 10000, null);
+
+                LatLng orig = new LatLng(16.5542868,120.3232215);
+                LatLng dest = new LatLng(16.6169121,120.31527);
+                String o = orig.latitude + "," +  orig.longitude;
+                String d = dest.latitude + "," +  dest.longitude;
+                DateTime now = new DateTime();
+                try {
+                    DirectionsResult result = DirectionsApi.newRequest(getGeoContext())
+                            .mode(TravelMode.DRIVING)
+                            .origin(o)
+                            .destination(d)
+                            .departureTime(now)
+                            .await();
+
+                    Log.e("Waypoints1:", String.valueOf(result.geocodedWaypoints[1].placeId));
+                    Log.e("Waypoints2:", String.valueOf(result.geocodedWaypoints[0].placeId));
+
+//                    Geocoder geocoder;
+//                    List<Address> addresses;
+//                    geocoder = new Geocoder(getActivity(), Locale.getDefault());
+//
+//                    addresses = geocoder.getFromLocation(orig.latitude, orig.longitude, 1); // Here 1 represent max location result to returned, by documents it recommended 1 to 5
+//
+//                    String city = addresses.get(0).getLocality();
+//
+//                    addresses = geocoder.getFromLocation(dest.latitude, dest.longitude, 1); // Here 1 represent max location result to returned, by documents it recommended 1 to 5
+//
+//                    String city2 = addresses.get(0).getLocality();
+//
+//                    Log.e("City1:", city);
+//                    Log.e("City2:", city2);
+
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (com.google.maps.errors.ApiException e) {
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -135,5 +187,12 @@ public class HomeFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+    }
+
+    private GeoApiContext getGeoContext() {
+        GeoApiContext distCalcer = new GeoApiContext.Builder()
+                .apiKey(getString(R.string.google_maps_key))
+                .build();
+        return distCalcer;
     }
 }
