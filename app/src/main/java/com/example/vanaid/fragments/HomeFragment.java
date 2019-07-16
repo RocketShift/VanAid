@@ -1,11 +1,16 @@
 package com.example.vanaid.fragments;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import android.util.Log;
@@ -14,12 +19,20 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.vanaid.R;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
+import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 import com.google.maps.DirectionsApi;
 import com.google.maps.GeoApiContext;
 import com.google.maps.GeolocationApi;
@@ -29,8 +42,11 @@ import com.google.maps.model.TravelMode;
 import org.joda.time.DateTime;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+
+import static com.bumptech.glide.gifdecoder.GifHeaderParser.TAG;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -51,7 +67,10 @@ public class HomeFragment extends Fragment {
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
-
+    private FusedLocationProviderClient fusedLocationClient;
+    private Boolean mLocationPermissionGranted = false;
+    private Location mLastKnownLocation;
+    private GoogleMap googleMap;
     public HomeFragment() {
         // Required empty public constructor
     }
@@ -88,64 +107,30 @@ public class HomeFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_home, container, false);
 
-        SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);  //use SuppoprtMapFragment for using in fragment instead of activity  MapFragment = activity   SupportMapFragment = fragment
-        mapFragment.getMapAsync(new OnMapReadyCallback() {
+        initMap();
+        if (!Places.isInitialized()) {
+            Places.initialize(getActivity(), getString(R.string.google_maps_key), Locale.getDefault());
+        }
+        // Initialize the AutocompleteSupportFragment.
+        AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment) getChildFragmentManager().findFragmentById(R.id.autocomplete_fragment);
+
+        // Specify the types of place data to return.
+        autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME));
+
+        // Set up a PlaceSelectionListener to handle the response.
+        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
-            public void onMapReady(GoogleMap mMap) {
-                mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+            public void onPlaceSelected(Place place) {
+                // TODO: Get info about the selected place.
+                Log.i(TAG, "Place: " + place.getName() + ", " + place.getId());
+            }
 
-                mMap.clear(); //clear old markers
-
-                CameraPosition googlePlex = CameraPosition.builder()
-                        .target(new LatLng(17.127995,120.485980))
-                        .zoom(10)
-                        .bearing(0)
-                        .tilt(45)
-                        .build();
-
-                mMap.animateCamera(CameraUpdateFactory.newCameraPosition(googlePlex), 10000, null);
-
-                LatLng orig = new LatLng(16.5542868,120.3232215);
-                LatLng dest = new LatLng(16.6169121,120.31527);
-                String o = orig.latitude + "," +  orig.longitude;
-                String d = dest.latitude + "," +  dest.longitude;
-                DateTime now = new DateTime();
-                try {
-                    DirectionsResult result = DirectionsApi.newRequest(getGeoContext())
-                            .mode(TravelMode.DRIVING)
-                            .origin(o)
-                            .destination(d)
-                            .departureTime(now)
-                            .await();
-
-                    Log.e("Waypoints1:", String.valueOf(result.geocodedWaypoints[1].placeId));
-                    Log.e("Waypoints2:", String.valueOf(result.geocodedWaypoints[0].placeId));
-
-//                    Geocoder geocoder;
-//                    List<Address> addresses;
-//                    geocoder = new Geocoder(getActivity(), Locale.getDefault());
-//
-//                    addresses = geocoder.getFromLocation(orig.latitude, orig.longitude, 1); // Here 1 represent max location result to returned, by documents it recommended 1 to 5
-//
-//                    String city = addresses.get(0).getLocality();
-//
-//                    addresses = geocoder.getFromLocation(dest.latitude, dest.longitude, 1); // Here 1 represent max location result to returned, by documents it recommended 1 to 5
-//
-//                    String city2 = addresses.get(0).getLocality();
-//
-//                    Log.e("City1:", city);
-//                    Log.e("City2:", city2);
-
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (com.google.maps.errors.ApiException e) {
-                    e.printStackTrace();
-                }
+            @Override
+            public void onError(Status status) {
+                // TODO: Handle the error.
+                Log.i(TAG, "An error occurred: " + status);
             }
         });
-
 
         return rootView;
     }
@@ -194,5 +179,124 @@ public class HomeFragment extends Fragment {
                 .apiKey(getString(R.string.google_maps_key))
                 .build();
         return distCalcer;
+    }
+
+    private void initMap() {
+        SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);  //use SuppoprtMapFragment for using in fragment instead of activity  MapFragment = activity   SupportMapFragment = fragment
+        mapFragment.getMapAsync(new OnMapReadyCallback() {
+            @Override
+            public void onMapReady(GoogleMap mMap) {
+                mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+                googleMap = mMap;
+
+                LatLng center = new LatLng(17.127995,120.485980);
+                if(mLastKnownLocation != null){
+                    center = new LatLng(mLastKnownLocation.getLatitude(), mLastKnownLocation.getLongitude());
+                }
+
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(center, 10));
+
+                if (ContextCompat.checkSelfPermission(getActivity(),
+                        Manifest.permission.ACCESS_COARSE_LOCATION)
+                        != PackageManager.PERMISSION_GRANTED
+                        && ContextCompat.checkSelfPermission(getActivity(),
+                        Manifest.permission.ACCESS_FINE_LOCATION)
+                        != PackageManager.PERMISSION_GRANTED) {
+
+                    requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},1);
+                    return;
+                } else {
+                    mLocationPermissionGranted = true;
+                }
+
+                if (mLocationPermissionGranted) {
+                    updateMap();
+                }
+//                LatLng orig = new LatLng(16.5542868,120.3232215);
+//                LatLng dest = new LatLng(16.6169121,120.31527);
+//                String o = orig.latitude + "," +  orig.longitude;
+//                String d = dest.latitude + "," +  dest.longitude;
+//                DateTime now = new DateTime();
+//                try {
+//                    DirectionsResult result = DirectionsApi.newRequest(getGeoContext())
+//                            .mode(TravelMode.DRIVING)
+//                            .origin(o)
+//                            .destination(d)
+//                            .departureTime(now)
+//                            .await();
+//
+//                    Log.e("Waypoints1:", String.valueOf(result.geocodedWaypoints[1].placeId));
+//                    Log.e("Waypoints2:", String.valueOf(result.geocodedWaypoints[0].placeId));
+//
+////                    Geocoder geocoder;
+////                    List<Address> addresses;
+////                    geocoder = new Geocoder(getActivity(), Locale.getDefault());
+////
+////                    addresses = geocoder.getFromLocation(orig.latitude, orig.longitude, 1); // Here 1 represent max location result to returned, by documents it recommended 1 to 5
+////
+////                    String city = addresses.get(0).getLocality();
+////
+////                    addresses = geocoder.getFromLocation(dest.latitude, dest.longitude, 1); // Here 1 represent max location result to returned, by documents it recommended 1 to 5
+////
+////                    String city2 = addresses.get(0).getLocality();
+////
+////                    Log.e("City1:", city);
+////                    Log.e("City2:", city2);
+//
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                } catch (com.google.maps.errors.ApiException e) {
+//                    e.printStackTrace();
+//                }
+            }
+        });
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String[] permissions, int[] grantResults) {
+        Log.e("Permission:", String.valueOf(requestCode));
+        switch (requestCode) {
+            case 1: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    mLocationPermissionGranted = true;
+                    updateMap();
+                }
+                return;
+            }
+        }
+    }
+
+    public void setMapCenter(){
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mLastKnownLocation.getLatitude(), mLastKnownLocation.getLongitude()), 10));
+    }
+
+    public void updateMap(){
+        try {
+            Log.e("mPermissionGranted:", String.valueOf(mLocationPermissionGranted));
+            if (googleMap == null) {
+                return;
+            }
+            googleMap.setMyLocationEnabled(true);
+            googleMap.getUiSettings().setMyLocationButtonEnabled(true);
+            fusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
+            fusedLocationClient.getLastLocation()
+                    .addOnSuccessListener(getActivity(), new OnSuccessListener<Location>() {
+                        @Override
+                        public void onSuccess(Location location) {
+                            // Got last known location. In some rare situations this can be null.
+                            if (location != null) {
+                                mLastKnownLocation = location;
+                                setMapCenter();
+                            }
+                        }
+                    });
+        } catch (SecurityException e)  {
+            Log.e("Exception: %s", e.getMessage());
+        }
     }
 }
