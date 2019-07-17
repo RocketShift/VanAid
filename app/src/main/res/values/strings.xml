@@ -41,4 +41,5 @@
     <string name="title_activity_maps">Map</string>
     <string name="Open">Open</string>
     <string name="Close">Close</string>
+    <string name="find_your_van">FIND YOUR VAN</string>
 </resources>
