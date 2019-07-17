@@ -31,7 +31,7 @@ public class Requestor {
     private Map<String, Object> param;
     private Boolean asynchronus = false;
     private Integer PAGE = null;
-    private String url = "http://vanaid.dresdain.com/";
+    private String url = "https://vanaid.000webhostapp.com/";
     private Context context;
     final public static String SHARED_REFERENCES = "vanaidpreferences";
 
