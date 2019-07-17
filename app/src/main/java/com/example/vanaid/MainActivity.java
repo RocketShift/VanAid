@@ -23,12 +23,9 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        toolbar = getSupportActionBar();
-
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
-        toolbar.setTitle("Home");
         loadFragment(new HomeFragment());
     }
 
@@ -40,17 +37,14 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
             Fragment fragment;
             switch (item.getItemId()) {
                 case R.id.home:
-                    toolbar.setTitle("Home");
                     fragment = new HomeFragment();
                     loadFragment(fragment);
                     return true;
                 case R.id.payment:
-                    toolbar.setTitle("Payment");
                     fragment = new PaymentFragment();
                     loadFragment(fragment);
                     return true;
                 case R.id.account:
-                    toolbar.setTitle("Account");
                     fragment = new AccountFragment();
                     loadFragment(fragment);
                     return true;
