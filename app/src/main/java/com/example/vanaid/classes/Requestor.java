@@ -1,6 +1,7 @@
 package com.example.vanaid.classes;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiInfo;
@@ -23,8 +24,11 @@ import java.net.NetworkInterface;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
+import static android.content.Context.MODE_PRIVATE;
 
 public class Requestor {
     private Boolean isRunning = false;
@@ -37,8 +41,13 @@ public class Requestor {
 
     public Requestor(String url, Map<String, Object> param, Context context){
         this.url = this.url + url;
-        this.param = param;
         this.context = context;
+
+        if(param == null){
+            this.param = new LinkedHashMap<>();
+        }else{
+            this.param = param;
+        }
     }
 
     public void execute(){
@@ -149,12 +158,20 @@ public class Requestor {
             BufferedReader reader = null;
 
             try {
+                SharedPreferences sharedPreferences = context.getSharedPreferences(Requestor.SHARED_REFERENCES, MODE_PRIVATE);
+                String access_token = sharedPreferences.getString("access_token", null);
+
                 byte[] postDataBytes = urlParams(param);
                 java.net.URL urlj = new URL(url);
                 connection = (HttpURLConnection) urlj.openConnection();
                 connection.setRequestMethod("POST");
                 connection.setDoOutput(true);
                 connection.setRequestProperty("X-Requested-With", "XMLHttpRequest");
+
+                if(access_token != null){
+                    connection.setRequestProperty("Authorization", "Bearer " + access_token);
+                }
+
                 connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
                 connection.setRequestProperty("Content-Length", String.valueOf(postDataBytes.length));
                 connection.getOutputStream().write(postDataBytes);
