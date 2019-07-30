@@ -42,4 +42,5 @@
     <string name="Open">Open</string>
     <string name="Close">Close</string>
     <string name="find_your_van">FIND YOUR VAN</string>
+    <string name="enter_destination">Enter Destination</string>
 </resources>

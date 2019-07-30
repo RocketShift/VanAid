@@ -23,11 +23,24 @@
         android:orientation="vertical"
         android:padding="20dp">
 
-        <fragment android:id="@+id/autocomplete_fragment"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
-            />
+            android:orientation="vertical"
+            android:background="@drawable/box_white">
+
+            <fragment android:id="@+id/autocomplete_fragment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
+                />
+            <fragment android:id="@+id/autocomplete_fragment_dropoff"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
+                />
+
+        </LinearLayout>
 
     </LinearLayout>
 
@@ -39,6 +52,7 @@
         android:paddingRight="10dp">
 
         <Button
+            android:id="@+id/btnFind"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|center"

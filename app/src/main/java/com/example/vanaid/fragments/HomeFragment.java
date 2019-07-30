@@ -19,6 +19,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import com.example.vanaid.R;
 import com.google.android.gms.common.api.Status;
@@ -65,7 +66,7 @@ import static com.bumptech.glide.gifdecoder.GifHeaderParser.TAG;
  * Use the {@link HomeFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class HomeFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnCameraMoveListener, GoogleMap.OnCameraIdleListener {
+public class HomeFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnCameraMoveListener, GoogleMap.OnCameraIdleListener, View.OnClickListener {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -81,6 +82,10 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
     private Location mLastKnownLocation;
     private GoogleMap googleMap;
     private Marker pickupMarker;
+    private Marker dropoffMarker;
+    private Button btnFind;
+    private AutocompleteSupportFragment autocompleteFragment;
+    private AutocompleteSupportFragment dropoffAutocompleteFragment;
     public HomeFragment() {
         // Required empty public constructor
     }
@@ -116,13 +121,15 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_home, container, false);
+        btnFind = (Button) rootView.findViewById(R.id.btnFind);
+        btnFind.setOnClickListener(this);
 
         initMap();
         if (!Places.isInitialized()) {
             Places.initialize(getActivity(), getString(R.string.google_maps_key), Locale.getDefault());
         }
         // Initialize the AutocompleteSupportFragment.
-        AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment) getChildFragmentManager().findFragmentById(R.id.autocomplete_fragment);
+        autocompleteFragment = (AutocompleteSupportFragment) getChildFragmentManager().findFragmentById(R.id.autocomplete_fragment);
 
         // Specify the types of place data to return.
         autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME));
@@ -164,6 +171,15 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
                 Log.i(TAG, "An error occurred: " + status);
             }
         });
+
+        dropoffAutocompleteFragment = (AutocompleteSupportFragment) getChildFragmentManager().findFragmentById(R.id.autocomplete_fragment_dropoff);
+        dropoffAutocompleteFragment.setHint(getString(R.string.enter_destination));
+        // Specify the types of place data to return.
+        dropoffAutocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME));
+        dropoffAutocompleteFragment.setLocationRestriction(RectangularBounds.newInstance(
+                new LatLng(15.932911, 119.944304),
+                new LatLng(18.342771, 121.046823)
+        ));
 
         return rootView;
     }
@@ -210,6 +226,23 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onClick(View view) {
+        if(view.equals(btnFind)){
+            Geocoder geocoder;
+            List<Address> addresses;
+
+            geocoder = new Geocoder(getActivity(), Locale.getDefault());
+            try {
+                addresses = geocoder.getFromLocation(pickupMarker.getPosition().latitude, pickupMarker.getPosition().longitude, 1); // Here 1 represent max location result to returned, by documents it recommended 1 to 5
+                String city2 = addresses.get(0).getLocality();
+                Log.d("PIckup address", addresses.get(0).getLocality() + " " + addresses.get(0).getSubAdminArea());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -334,6 +367,18 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
             pickupMarker = googleMap.addMarker(new MarkerOptions()
                     .position(new LatLng(points[0].location.lat, points[0].location.lng)));
             googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(points[0].location.lat, points[0].location.lng), 15));
+
+            Geocoder geocoder;
+            List<Address> addresses;
+
+            geocoder = new Geocoder(getActivity(), Locale.getDefault());
+
+            addresses = geocoder.getFromLocation(pickupMarker.getPosition().latitude, pickupMarker.getPosition().longitude, 1); // Here 1 represent max location result to returned, by documents it recommended 1 to 5
+            String pickupAddress = addresses.get(0).getAddressLine(0);
+            Log.d("PIckup address", String.valueOf(addresses.get(0).getMaxAddressLineIndex()));
+
+            autocompleteFragment.setText(pickupAddress);
+
         } catch (ApiException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
@@ -350,7 +395,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
                 return;
             }
             googleMap.setMyLocationEnabled(true);
-            googleMap.getUiSettings().setMyLocationButtonEnabled(true);
+            googleMap.getUiSettings().setMyLocationButtonEnabled(false);
             fusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
             fusedLocationClient.getLastLocation()
                     .addOnSuccessListener(getActivity(), new OnSuccessListener<Location>() {
