@@ -29,6 +29,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -86,6 +87,11 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
     private Button btnFind;
     private AutocompleteSupportFragment autocompleteFragment;
     private AutocompleteSupportFragment dropoffAutocompleteFragment;
+    private Boolean pickupSetter = true;
+    private Boolean dropoffSetter = false;
+    private float cameraZoom = 10;
+    private String pickupAddress;
+    private String dropoffAddress;
     public HomeFragment() {
         // Required empty public constructor
     }
@@ -144,6 +150,8 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
             public void onPlaceSelected(Place place) {
                 // TODO: Get info about the selected place.
                 try {
+                    pickupSetter = true;
+                    dropoffSetter = false;
                     Geocoder geocoder;
                     List<Address> addresses;
                     geocoder = new Geocoder(getActivity(), Locale.getDefault());
@@ -181,6 +189,51 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
                 new LatLng(18.342771, 121.046823)
         ));
 
+        dropoffAutocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+            @Override
+            public void onPlaceSelected(Place place) {
+                // TODO: Get info about the selected place.
+                try {
+                    dropoffSetter = true;
+                    pickupSetter = false;
+                    Geocoder geocoder;
+                    List<Address> addresses;
+                    geocoder = new Geocoder(getActivity(), Locale.getDefault());
+
+                    addresses = geocoder.getFromLocationName(place.getName(), 1);
+
+                    com.google.maps.model.LatLng center = new com.google.maps.model.LatLng(addresses.get(0).getLatitude(), addresses.get(0).getLongitude());
+                    LatLng defaultPosition = new LatLng(addresses.get(0).getLatitude(), addresses.get(0).getLongitude());
+                    SnappedPoint[] points = RoadsApi.snapToRoads(getGeoContext(), true, center).await();
+                    if(points != null){
+                        defaultPosition = new LatLng(points[0].location.lat, points[0].location.lng);
+                    }
+
+                    if(dropoffMarker == null){
+                        dropoffMarker = googleMap.addMarker(new MarkerOptions()
+                                .position(defaultPosition)
+                                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));
+                    }else{
+                        dropoffMarker.setPosition(defaultPosition);
+                    }
+
+                    googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(defaultPosition, 20));
+                } catch (ApiException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onError(Status status) {
+                // TODO: Handle the error.
+                Log.i(TAG, "An error occurred: " + status);
+            }
+        });
+
         return rootView;
     }
 
@@ -210,20 +263,41 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
 
     @Override
     public void onCameraMove() {
-        pickupMarker.setPosition(googleMap.getCameraPosition().target);
+        if(googleMap.getCameraPosition().zoom == cameraZoom){
+            if(pickupSetter){
+                pickupMarker.setPosition(googleMap.getCameraPosition().target);
+            }else if(dropoffSetter){
+                dropoffMarker.setPosition(googleMap.getCameraPosition().target);
+            }
+        }
+
+        cameraZoom = googleMap.getCameraPosition().zoom;
     }
 
     @Override
     public void onCameraIdle() {
+        Geocoder geocoder;
+        List<Address> addresses;
+
+        geocoder = new Geocoder(getActivity(), Locale.getDefault());
+
         try {
-            SnappedPoint[] points = RoadsApi.snapToRoads(getGeoContext(), true, new com.google.maps.model.LatLng(googleMap.getCameraPosition().target.latitude, googleMap.getCameraPosition().target.longitude)).await();
-            if(points != null){
-                pickupMarker.setPosition(new LatLng(points[0].location.lat, points[0].location.lng));
+            Marker anchor = null;
+            if(pickupSetter){
+                anchor = pickupMarker;
+            }else if(dropoffSetter){
+                anchor = dropoffMarker;
             }
-        } catch (ApiException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+            addresses = geocoder.getFromLocation(anchor.getPosition().latitude, anchor.getPosition().longitude, 1); // Here 1 represent max location result to returned, by documents it recommended 1 to 5
+            String pickupAddress = addresses.get(0).getAddressLine(0);
+
+            if(pickupSetter){
+                autocompleteFragment.setText(pickupAddress);
+                this.pickupAddress = addresses.get(0).getLocality() + ", " + addresses.get(0).getSubAdminArea();
+            }else if(dropoffSetter){
+                dropoffAutocompleteFragment.setText(pickupAddress);
+                dropoffAddress = addresses.get(0).getLocality() + ", " + addresses.get(0).getSubAdminArea();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -304,44 +378,6 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
 
         googleMap.setOnCameraMoveListener(this);
         googleMap.setOnCameraIdleListener(this);
-//                LatLng orig = new LatLng(16.5542868,120.3232215);
-//                LatLng dest = new LatLng(16.6169121,120.31527);
-//                String o = orig.latitude + "," +  orig.longitude;
-//                String d = dest.latitude + "," +  dest.longitude;
-//                DateTime now = new DateTime();
-//                try {
-//                    DirectionsResult result = DirectionsApi.newRequest(getGeoContext())
-//                            .mode(TravelMode.DRIVING)
-//                            .origin(o)
-//                            .destination(d)
-//                            .departureTime(now)
-//                            .await();
-//
-//                    Log.e("Waypoints1:", String.valueOf(result.geocodedWaypoints[1].placeId));
-//                    Log.e("Waypoints2:", String.valueOf(result.geocodedWaypoints[0].placeId));
-//
-////                    Geocoder geocoder;
-////                    List<Address> addresses;
-////                    geocoder = new Geocoder(getActivity(), Locale.getDefault());
-////
-////                    addresses = geocoder.getFromLocation(orig.latitude, orig.longitude, 1); // Here 1 represent max location result to returned, by documents it recommended 1 to 5
-////
-////                    String city = addresses.get(0).getLocality();
-////
-////                    addresses = geocoder.getFromLocation(dest.latitude, dest.longitude, 1); // Here 1 represent max location result to returned, by documents it recommended 1 to 5
-////
-////                    String city2 = addresses.get(0).getLocality();
-////
-////                    Log.e("City1:", city);
-////                    Log.e("City2:", city2);
-//
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                } catch (com.google.maps.errors.ApiException e) {
-//                    e.printStackTrace();
-//                }
     }
 
     @Override
