@@ -43,4 +43,5 @@
     <string name="Close">Close</string>
     <string name="find_your_van">FIND YOUR VAN</string>
     <string name="enter_destination">Enter Destination</string>
+    <string name="something_went_wrong">Something went wrong. Please try again later.</string>
 </resources>

@@ -20,8 +20,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.example.vanaid.R;
+import com.example.vanaid.classes.Requestor;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -51,11 +53,14 @@ import com.google.maps.model.SnappedPoint;
 import com.google.maps.model.TravelMode;
 
 import org.joda.time.DateTime;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import static com.bumptech.glide.gifdecoder.GifHeaderParser.TAG;
 
@@ -164,6 +169,8 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
                         pickupMarker.setPosition(new LatLng(points[0].location.lat, points[0].location.lng));
                         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(points[0].location.lat, points[0].location.lng), 20));
                     }
+
+                    pickupAddress = addresses.get(0).getLocality() + ", " + addresses.get(0).getSubAdminArea();
                 } catch (ApiException e) {
                     e.printStackTrace();
                 } catch (InterruptedException e) {
@@ -216,6 +223,8 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
                     }else{
                         dropoffMarker.setPosition(defaultPosition);
                     }
+
+                    dropoffAddress = addresses.get(0).getLocality() + ", " + addresses.get(0).getSubAdminArea();
 
                     googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(defaultPosition, 20));
                 } catch (ApiException e) {
@@ -306,17 +315,33 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
     @Override
     public void onClick(View view) {
         if(view.equals(btnFind)){
-            Geocoder geocoder;
-            List<Address> addresses;
+            Map<String, Object> param = new LinkedHashMap<>();
+            param.put("pickup_lat", pickupMarker.getPosition().latitude);
+            param.put("pickup_lng", pickupMarker.getPosition().longitude);
+            param.put("pickup_address", pickupAddress);
+            param.put("dropoff_lat", dropoffMarker.getPosition().latitude);
+            param.put("dropoff_lng", dropoffMarker.getPosition().longitude);
+            param.put("dropoff_address", dropoffAddress);
 
-            geocoder = new Geocoder(getActivity(), Locale.getDefault());
-            try {
-                addresses = geocoder.getFromLocation(pickupMarker.getPosition().latitude, pickupMarker.getPosition().longitude, 1); // Here 1 represent max location result to returned, by documents it recommended 1 to 5
-                String city2 = addresses.get(0).getLocality();
-                Log.d("PIckup address", addresses.get(0).getLocality() + " " + addresses.get(0).getSubAdminArea());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            Requestor findRequestor = new Requestor("/api/bookings/find", param, getActivity()){
+                @Override
+                public void preExecute() {
+                    btnFind.setText(getString(R.string.please_wait));
+                }
+
+                @Override
+                public void postExecute(JSONObject response) {
+                    btnFind.setText(getString(R.string.find_your_van));
+                }
+
+                @Override
+                public void cancelled() {
+                    Toast.makeText(getActivity(), getString(R.string.something_went_wrong), Toast.LENGTH_LONG).show();
+                    btnFind.setText(getString(R.string.find_your_van));
+                }
+            };
+
+            findRequestor.execute();
         }
     }
 
