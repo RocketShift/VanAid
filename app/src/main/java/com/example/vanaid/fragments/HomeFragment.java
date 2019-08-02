@@ -62,8 +62,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import static com.bumptech.glide.gifdecoder.GifHeaderParser.TAG;
-
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
@@ -183,7 +181,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
             @Override
             public void onError(Status status) {
                 // TODO: Handle the error.
-                Log.i(TAG, "An error occurred: " + status);
+                Log.i("Place", "An error occurred: " + status);
             }
         });
 
@@ -239,7 +237,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
             @Override
             public void onError(Status status) {
                 // TODO: Handle the error.
-                Log.i(TAG, "An error occurred: " + status);
+                Log.i("Place", "An error occurred: " + status);
             }
         });
 
