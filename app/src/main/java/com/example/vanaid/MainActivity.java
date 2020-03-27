@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.net.Uri;
@@ -26,7 +27,7 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
-        loadFragment(new HomeFragment());
+        loadFragment(new HomeFragment(), HomeFragment.class.getSimpleName());
     }
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
@@ -38,27 +39,41 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
             switch (item.getItemId()) {
                 case R.id.home:
                     fragment = new HomeFragment();
-                    loadFragment(fragment);
+                    loadFragment(fragment, HomeFragment.class.getSimpleName());
                     return true;
                 case R.id.payment:
                     fragment = new PaymentFragment();
-                    loadFragment(fragment);
+                    loadFragment(fragment, PaymentFragment.class.getSimpleName());
                     return true;
                 case R.id.account:
                     fragment = new AccountFragment();
-                    loadFragment(fragment);
+                    loadFragment(fragment, AccountFragment.class.getSimpleName());
                     return true;
             }
             return false;
         }
     };
 
-    private void loadFragment(Fragment fragment) {
-        // load fragment
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.frame_container, fragment);
-        transaction.addToBackStack(null);
-        transaction.commit();
+    private void loadFragment(Fragment fragment, String tagFragmentName) {
+        FragmentManager mFragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
+
+        Fragment currentFragment = mFragmentManager.getPrimaryNavigationFragment();
+        if (currentFragment != null) {
+            fragmentTransaction.hide(currentFragment);
+        }
+
+        Fragment fragmentTemp = mFragmentManager.findFragmentByTag(tagFragmentName);
+        if (fragmentTemp == null) {
+            fragmentTemp = fragment;
+            fragmentTransaction.add(R.id.frame_container, fragmentTemp, tagFragmentName);
+        } else {
+            fragmentTransaction.show(fragmentTemp);
+        }
+
+        fragmentTransaction.setPrimaryNavigationFragment(fragmentTemp);
+        fragmentTransaction.setReorderingAllowed(true);
+        fragmentTransaction.commitNowAllowingStateLoss();
     }
 
     @Override
